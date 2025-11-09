@@ -1,0 +1,36 @@
+name: Matrix Build with Artifacts
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16, 18, 20]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step identifier (required)
+      - name: matrix-c2841af
+        run: echo "Building for Node.js version ${{ matrix.node-version }}"
+
+      # Generate a unique, non-empty artifact file
+      - name: Generate build artifact
+        run: |
+          echo "This is the build output for Node.js version ${{ matrix.node-version }}" > build-info.txt
+          echo "Timestamp: $(date)" >> build-info.txt
+          echo "Matrix variant: node${{ matrix.node-version }}" >> build-info.txt
+          echo "Commit SHA: $GITHUB_SHA" >> build-info.txt
+
+      # Upload artifact (required prefix)
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-c2841af-node${{ matrix.node-version }}
+          path: build-info.txt
